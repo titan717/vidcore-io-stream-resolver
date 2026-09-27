@@ -1,9 +1,8 @@
-import { siteOrigin } from '../config.js';
-import { scraperHeaders } from './request.js';
+import { siteOrigin, siteReferer, userAgent } from '../config.js';
 import { collectCookies } from './session.js';
 
-const EN_PATTERN = /\\"en\\":\\"([^\\"]+)\\"/;
-const PROPS_PATTERN = /\\"en\\":\\"[^\\"]+\\"(.+?\\"server\\":\\"[^\\"]*\\"\})/;
+const EN_PATTERN = /\\\"en\\\":\\\"([^\\\"]+)\\\"/;
+const PROPS_PATTERN = /\\\"en\\\":\\\"[^\\\"]+\\\"(.+?\\\"server\\\":\\\"[^\\\"]*\\\"\\})/;
 
 type EmbedProps = {
   en: string;
@@ -20,7 +19,7 @@ export type EmbedSnapshot = {
 };
 
 function parseNextPropsObject(raw: string): EmbedProps {
-  const normalized = raw.replace(/\\"/g, '"').replace(/"\$undefined"/g, 'null');
+  const normalized = raw.replace(/\\\"/g, '"').replace(/"\\$undefined"/g, 'null');
   const json = normalized.startsWith('{') ? normalized : `{${normalized}`;
   return JSON.parse(json) as EmbedProps;
 }
@@ -47,7 +46,12 @@ export async function scrapeEmbedPage(
   const path = embedPath(kind, id, options);
   const jar = new Map<string, string>();
   const response = await fetch(`${siteOrigin}${path}`, {
-    headers: { ...scraperHeaders, accept: 'text/html,application/xhtml+xml' },
+    headers: {
+      'User-Agent': userAgent,
+      Accept: 'text/html,application/xhtml+xml',
+      'Accept-Language': 'en-US,en;q=0.9',
+      Referer: siteReferer,
+    },
   });
   if (!response.ok) throw new Error(`page fetch failed: ${response.status} ${response.statusText}`);
   collectCookies(response, jar);
