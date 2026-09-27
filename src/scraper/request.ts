@@ -4,7 +4,7 @@ export const scraperHeaders: Record<string, string> = {
   'user-agent': userAgent,
   accept: '*/*',
   'accept-language': 'en-US,en;q=0.9',
-  'sec-ch-ua': '"Google Chrome";v="140", "Chromium";v="140", "Not=A?Brand";v="24"',
+  'sec-ch-ua': '"Google Chrome";v="140", "Chromium";v="140", "Not:A-Brand";v="99"',
   'sec-ch-ua-mobile': '?0',
   'sec-ch-ua-platform': '"Windows"',
   'sec-fetch-site': 'same-origin',
